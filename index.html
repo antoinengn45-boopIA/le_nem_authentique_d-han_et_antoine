@@ -2,10 +2,12 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Le Nem Authentique - Commande</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <script type="text/javascript">
+        // Initialisation avec votre clé publique
         (function(){ emailjs.init("x-PY3Cs4sSaLBcVj5"); })();
     </script>
 </head>
@@ -33,8 +35,69 @@
                 <h2 class="font-bold mb-4">Votre Commande</h2>
                 <div id="cart-items" class="space-y-2 mb-4 text-sm"></div>
                 <div class="border-t pt-4 font-bold">Total : <span id="total-ttc">0.00€</span></div>
-                <button onclick="sendReceipt()" class="w-full mt-6 bg-green-600 text-white py-3 rounded-xl font-bold">Valider</button>
+                <button onclick="sendReceipt()" class="w-full mt-6 bg-green-600 text-white py-3 rounded-xl font-bold">Valider la commande</button>
             </div>
+        </main>
+    </div>
+
+    <script>
+        function checkEntry() {
+            if (document.getElementById('entry-pass').value === "nem.vietnam") {
+                document.getElementById('lock-screen').classList.add('hidden');
+                document.getElementById('main-interface').classList.remove('hidden');
+                if(!localStorage.getItem('user_account')) {
+                    const email = prompt("Créez votre compte - Email :");
+                    const phone = prompt("Numéro de téléphone :");
+                    localStorage.setItem('user_account', JSON.stringify({email, phone}));
+                }
+                document.getElementById('user-info').innerText = JSON.parse(localStorage.getItem('user_account')).email;
+            } else { alert("Code incorrect !"); }
+        }
+
+        const catalog = [
+            { cat: 'Nems', name: 'Nem Porc', price: 1.50 },
+            { cat: 'Samoussas', name: 'Samoussa Bœuf', price: 1.20 }
+        ];
+        let cart = [];
+
+        function updateCart() {
+            const container = document.getElementById('cart-items');
+            container.innerHTML = '';
+            let total = 0;
+            cart.forEach(item => {
+                total += item.price;
+                container.innerHTML += `<div class="flex justify-between"><span>${item.name}</span><span>${item.price.toFixed(2)}€</span></div>`;
+            });
+            document.getElementById('total-ttc').innerText = total.toFixed(2) + '€';
+        }
+
+        function addToCart(name, price) {
+            cart.push({name, price});
+            updateCart();
+        }
+
+        function sendReceipt() {
+            const user = JSON.parse(localStorage.getItem('user_account'));
+            // Envoi avec votre ID de modèle
+            emailjs.send('service_urmxi8v', 'template_xsgdx5j', {
+                to_email: user.email,
+                cart_summary: cart.map(i => i.name).join(', '),
+                total_ttc: document.getElementById('total-ttc').innerText
+            }).then(() => alert("✅ Commande envoyée à " + user.email), 
+                  (err) => alert("❌ Erreur : " + JSON.stringify(err)));
+        }
+
+        const menuCont = document.getElementById('menu-container');
+        catalog.forEach(item => {
+            menuCont.innerHTML += `
+                <div class="flex justify-between items-center bg-white p-4 rounded-lg border">
+                    <div><p class="text-xs text-orange-600">${item.cat}</p><h3 class="font-bold">${item.name}</h3></div>
+                    <button onclick="addToCart('${item.name}', ${item.price})" class="bg-gray-900 text-white px-4 py-2 rounded-lg">+</button>
+                </div>`;
+        });
+    </script>
+</body>
+</html>            </div>
         </main>
     </div>
 
