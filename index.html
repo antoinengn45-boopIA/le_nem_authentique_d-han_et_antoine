@@ -3,19 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>hanetantoine - Foodtech</title>
+    <title>hanetantoine - Commande en ligne</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <script type="text/javascript">
-        (function(){ emailjs.init("VOTRE_PUBLIC_KEY_ICI"); })();
+        // Clé publique intégrée
+        (function(){ emailjs.init("x-PY3Cs4sSaLBcVj5"); })();
     </script>
+    <script async src="https://tally.so/widgets/embed.js"></script>
 </head>
 <body class="bg-slate-50 font-sans pb-20">
 
     <header class="bg-white border-b sticky top-0 z-50">
         <div class="max-w-5xl mx-auto px-6 py-4 flex justify-between items-center">
             <h1 class="text-2xl font-bold tracking-tight">hanetantoine</h1>
-            <button data-tally-open="EkML7o" class="text-sm bg-blue-600 text-white px-4 py-2 rounded-full hover:bg-blue-700 transition">Contact</button>
+            <button data-tally-open="EkML7o" class="text-sm bg-blue-600 text-white px-5 py-2 rounded-full hover:bg-blue-700 transition font-medium">
+                Contact & Suggestions
+            </button>
         </div>
     </header>
 
@@ -68,7 +72,7 @@
             if(cart.length < 10) {
                 cart.push({name, price});
                 updateCart();
-            } else { alert("Limite de 10 articles atteinte !"); }
+            } else { alert("Limite de 10 articles !"); }
         }
 
         function sendReceipt() {
