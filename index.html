@@ -3,114 +3,51 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Le Nem Authentique</title>
+    <title>Saveurs d'Asie | Maison</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="style.css">
+    <script async src="https://tally.so/widgets/embed.js"></script>
 </head>
-<body>
+<body class="bg-gray-50 text-gray-900">
 
-    <div id="lock-screen" class="fixed inset-0 bg-[#1a1a1a] z-50 flex items-center justify-center p-6">
-        <div class="bg-[#2d2d2d] p-8 rounded-2xl shadow-xl w-full max-w-sm text-center border border-[#444]">
-            <h1 class="text-2xl font-bold mb-4 text-white">Accès Privé</h1>
-            <input type="password" id="entry-pass" class="w-full p-3 bg-[#1a1a1a] border border-[#444] text-white rounded-lg mb-4" placeholder="Code d'accès">
-            <button onclick="checkEntry()" class="w-full bg-white text-black py-3 rounded-lg font-bold hover:bg-gray-200 transition">Entrer</button>
+    <header class="bg-white shadow-sm sticky top-0 z-50">
+        <nav class="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="text-2xl font-bold text-red-600 tracking-tight">🍱 SAVEURS D'ASIE</div>
+            <button data-tally-open="EkML7o" data-tally-emoji-text="👋" data-tally-emoji-animation="wave" 
+                    class="bg-red-600 text-white px-6 py-2 rounded-full font-semibold hover:bg-red-700 transition">
+                Commander
+            </button>
+        </nav>
+    </header>
+
+    <section class="max-w-6xl mx-auto px-6 py-16 text-center">
+        <h1 class="text-5xl font-extrabold mb-6">Le meilleur du fait-maison <br><span class="text-red-600">à votre porte</span></h1>
+        <p class="text-xl text-gray-600 mb-10">Nems croustillants, samoussas fondants et saucisses vietnamiennes authentiques.</p>
+        <button data-tally-open="EkML7o" data-tally-emoji-text="👋" data-tally-emoji-animation="wave"
+                class="bg-black text-white px-8 py-4 rounded-xl text-lg hover:bg-gray-800 transition">
+            Voir le menu & Commander
+        </button>
+    </section>
+
+    <section class="max-w-6xl mx-auto px-6 py-16">
+        <h2 class="text-3xl font-bold mb-12 text-center">Nos Spécialités</h2>
+        <div class="grid md:grid-cols-3 gap-8">
+            <div class="bg-white p-6 rounded-2xl shadow-md border border-gray-100">
+                <div class="text-4xl mb-4">🥢</div>
+                <h3 class="text-xl font-bold mb-2">Nems Traditionnels</h3>
+                <p class="text-gray-600">Porc ou poulet, préparés selon une recette familiale ancestrale.</p>
+            </div>
+            <div class="bg-white p-6 rounded-2xl shadow-md border border-gray-100">
+                <div class="text-4xl mb-4">🥟</div>
+                <h3 class="text-xl font-bold mb-2">Samoussas</h3>
+                <p class="text-gray-600">Légumes croquants ou viande épicée dans une feuille croustillante.</p>
+            </div>
+            <div class="bg-white p-6 rounded-2xl shadow-md border border-gray-100">
+                <div class="text-4xl mb-4">🌭</div>
+                <h3 class="text-xl font-bold mb-2">Saucisses Vietnamiennes</h3>
+                <p class="text-gray-600">Goût unique, fumées avec des épices maison. Incontournables.</p>
+            </div>
         </div>
-    </div>
+    </section>
 
-    <div id="main-interface" class="hidden max-w-5xl mx-auto px-6 py-12">
-        <header class="flex justify-between items-center mb-12">
-            <h1 class="text-2xl font-bold">Le Nem Authentique</h1>
-            <button onclick="logout()" class="bg-[#444] px-4 py-2 rounded text-sm">Déconnexion</button>
-        </header>
-
-        <div id="menu-container" class="grid md:grid-cols-3 gap-6"></div>
-    </div>
-
-    <script>
-        // Votre logique JS reste la même
-        function checkEntry() {
-            if (document.getElementById('entry-pass').value === "nem.vietnam") {
-                document.getElementById('lock-screen').classList.add('hidden');
-                document.getElementById('main-interface').classList.remove('hidden');
-            } else { alert("Code incorrect !"); }
-        }
-        function logout() { location.reload(); }
-    </script>
-</body>
-</html>                <input type="text" id="edit-name" class="w-full p-2 border mb-2 rounded" placeholder="Nom Prénom">
-                <input type="email" id="edit-email" class="w-full p-2 border mb-2 rounded" placeholder="Email">
-                <input type="tel" id="edit-phone" class="w-full p-2 border mb-4 rounded" placeholder="Téléphone">
-                <button onclick="saveProfile()" class="bg-black text-white px-4 py-2 rounded">Enregistrer</button>
-            </div>
-
-            <div id="admin-panel" class="hidden bg-blue-50 p-6 rounded-2xl border mb-8">
-                <h2 class="font-bold text-blue-800 mb-4">Ajouter un produit</h2>
-                <div class="flex gap-2">
-                    <input type="text" id="new-item" placeholder="Nom du produit" class="p-2 border rounded flex-1">
-                    <input type="number" id="new-price" placeholder="Prix (€)" class="p-2 border rounded w-24">
-                    <button onclick="addItem()" class="bg-blue-600 text-white px-4 py-2 rounded">Ajouter</button>
-                </div>
-            </div>
-
-            <h2 class="text-2xl font-bold mb-6">Nos Spécialités</h2>
-            <div id="menu-container" class="grid md:grid-cols-3 gap-6"></div>
-        </main>
-    </div>
-
-    <script>
-        let catalog = JSON.parse(localStorage.getItem('catalog')) || [
-            {name: 'Nem Porc Artisanal', price: 1.50},
-            {name: 'Nem Poulet', price: 1.50},
-            {name: 'Samoussa Bœuf', price: 1.20},
-            {name: 'Samoussa Légumes', price: 1.20}
-        ];
-
-        function renderMenu() {
-            const container = document.getElementById('menu-container');
-            container.innerHTML = catalog.map(item => `
-                <div class="bg-white p-6 rounded-2xl border flex flex-col justify-between">
-                    <h3 class="font-bold text-lg">${item.name}</h3>
-                    <p class="text-2xl font-bold mt-4">${item.price.toFixed(2)} €</p>
-                </div>
-            `).join('');
-        }
-
-        function addItem() {
-            const name = document.getElementById('new-item').value;
-            const price = parseFloat(document.getElementById('new-price').value);
-            if(name && price) {
-                catalog.push({name, price});
-                localStorage.setItem('catalog', JSON.stringify(catalog));
-                renderMenu();
-            }
-        }
-
-        // --- Logique d'accès (Inchangée) ---
-        function checkEntry() {
-            if (document.getElementById('entry-pass').value === "nem.vietnam") {
-                document.getElementById('lock-screen').classList.add('hidden');
-                document.getElementById('main-interface').classList.remove('hidden');
-                renderMenu();
-                // (Suite de la logique d'inscription...)
-                if(!localStorage.getItem('user_account')) {
-                    const name = prompt("Nom et Prénom :");
-                    const email = prompt("Email :");
-                    const phone = prompt("Numéro de téléphone :");
-                    localStorage.setItem('user_account', JSON.stringify({name, email, phone}));
-                }
-                updateUI();
-            } else { alert("Code incorrect !"); }
-        }
-
-        function updateUI() {
-            const user = JSON.parse(localStorage.getItem('user_account'));
-            if(user.email === "admin@admin-nem.com") document.getElementById('admin-btn').classList.remove('hidden');
-        }
-
-        function toggleAdmin() { document.getElementById('admin-panel').classList.toggle('hidden'); }
-        function showProfile() { document.getElementById('profile-panel').classList.toggle('hidden'); }
-        function logout() { localStorage.removeItem('user_account'); location.reload(); }
-        function saveProfile() { alert("Profil enregistré !"); }
-    </script>
 </body>
 </html>
