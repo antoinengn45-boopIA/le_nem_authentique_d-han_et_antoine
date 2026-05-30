@@ -6,37 +6,42 @@
     <title>hanetantoine - Commande en ligne</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script async src="https://tally.so/widgets/embed.js"></script>
     <script type="text/javascript">
-        // Clé publique intégrée
         (function(){ emailjs.init("x-PY3Cs4sSaLBcVj5"); })();
     </script>
-    <script async src="https://tally.so/widgets/embed.js"></script>
 </head>
-<body class="bg-slate-50 font-sans pb-20">
+<body class="bg-white font-sans text-gray-900">
 
-    <header class="bg-white border-b sticky top-0 z-50">
-        <div class="max-w-5xl mx-auto px-6 py-4 flex justify-between items-center">
-            <h1 class="text-2xl font-bold tracking-tight">hanetantoine</h1>
-            <button data-tally-open="EkML7o" class="text-sm bg-blue-600 text-white px-5 py-2 rounded-full hover:bg-blue-700 transition font-medium">
-                Contact & Suggestions
-            </button>
+    <header class="flex items-center justify-between p-6 border-b border-gray-100">
+        <a href="/" class="text-xl font-bold tracking-tight">hanetantoine</a>
+        
+        <nav class="hidden lg:flex">
+            <ul class="flex space-x-8">
+                <li><a href="#" class="text-gray-500 hover:text-black font-medium transition">Menu</a></li>
+                <li><button data-tally-open="EkML7o" class="text-gray-500 hover:text-black font-medium transition">Contact</button></li>
+            </ul>
+        </nav>
+
+        <div class="lg:hidden">
+            <button class="text-gray-600 font-medium">Menu</button>
         </div>
     </header>
 
-    <main class="max-w-5xl mx-auto px-6 py-8">
-        <div class="grid md:grid-cols-3 gap-8">
-            <div class="md:col-span-2 space-y-4" id="menu-container"></div>
+    <main class="max-w-5xl mx-auto px-6 py-12">
+        <div class="grid md:grid-cols-3 gap-12">
+            <div class="md:col-span-2 space-y-6" id="menu-container"></div>
 
-            <div class="bg-white p-6 rounded-2xl border shadow-sm h-fit sticky top-24">
-                <h2 class="text-xl font-bold mb-4">Ticket de commande</h2>
-                <div id="cart-items" class="space-y-2 mb-4 text-sm min-h-[50px]"></div>
-                <div class="border-t pt-4 space-y-1 text-sm font-semibold">
-                    <p>Total HT: <span id="total-ht">0.00</span>€</p>
-                    <p>TVA (5.5%): <span id="total-tva">0.00</span>€</p>
-                    <p class="text-lg">Total TTC: <span id="total-ttc">0.00</span>€</p>
+            <div class="bg-gray-50 p-8 rounded-2xl h-fit sticky top-6">
+                <h2 class="text-lg font-bold mb-6">Votre commande</h2>
+                <div id="cart-items" class="space-y-4 mb-6 text-sm"></div>
+                <div class="border-t border-gray-200 pt-6 space-y-2 text-sm">
+                    <div class="flex justify-between"><span>HT</span><span id="total-ht">0.00€</span></div>
+                    <div class="flex justify-between"><span>TVA (5.5%)</span><span id="total-tva">0.00€</span></div>
+                    <div class="flex justify-between font-bold text-base pt-2"><span>Total</span><span id="total-ttc">0.00€</span></div>
                 </div>
-                <button onclick="sendReceipt()" class="w-full mt-6 bg-green-600 text-white py-3 rounded-xl font-bold hover:bg-green-700 transition">
-                    Envoyer le reçu par mail
+                <button onclick="sendReceipt()" class="w-full mt-8 bg-black text-white py-4 rounded-xl font-medium hover:bg-gray-800 transition">
+                    Valider la commande
                 </button>
             </div>
         </div>
@@ -60,19 +65,19 @@
             let ht = 0;
             cart.forEach(item => {
                 ht += item.price;
-                container.innerHTML += `<div class="flex justify-between"><span>${item.name}</span><span>${item.price.toFixed(2)}€</span></div>`;
+                container.innerHTML += `<div class="flex justify-between"><span>${item.name}</span><span class="font-medium">${item.price.toFixed(2)}€</span></div>`;
             });
             const tva = ht * 0.055;
-            document.getElementById('total-ht').innerText = ht.toFixed(2);
-            document.getElementById('total-tva').innerText = tva.toFixed(2);
-            document.getElementById('total-ttc').innerText = (ht + tva).toFixed(2);
+            document.getElementById('total-ht').innerText = ht.toFixed(2) + '€';
+            document.getElementById('total-tva').innerText = tva.toFixed(2) + '€';
+            document.getElementById('total-ttc').innerText = (ht + tva).toFixed(2) + '€';
         }
 
         function addToCart(name, price) {
             if(cart.length < 10) {
                 cart.push({name, price});
                 updateCart();
-            } else { alert("Limite de 10 articles !"); }
+            } else { alert("Limite de 10 articles atteinte !"); }
         }
 
         function sendReceipt() {
@@ -87,17 +92,18 @@
             };
 
             emailjs.send('service_urmxi8v', 'template_xsgdx5j', templateParams)
-                .then(() => alert("✅ Reçu envoyé avec succès !"), 
-                      (err) => alert("❌ Erreur : " + JSON.stringify(err)));
+                .then(() => alert("✅ Reçu envoyé !"), (err) => alert("❌ Erreur."));
         }
 
         const menuCont = document.getElementById('menu-container');
         catalog.forEach(item => {
             menuCont.innerHTML += `
-                <div class="bg-white p-4 rounded-xl border flex justify-between items-center shadow-sm hover:border-blue-400 transition">
-                    <div><span class="text-[10px] font-bold text-blue-500 uppercase">${item.cat}</span>
-                    <h3 class="font-bold">${item.name}</h3></div>
-                    <button onclick="addToCart('${item.name}', ${item.price})" class="bg-slate-900 text-white px-4 py-2 rounded-lg font-bold hover:bg-slate-700">+</button>
+                <div class="flex justify-between items-center group">
+                    <div>
+                        <span class="text-[10px] uppercase tracking-widest text-gray-400">${item.cat}</span>
+                        <h3 class="font-medium text-lg">${item.name}</h3>
+                    </div>
+                    <button onclick="addToCart('${item.name}', ${item.price})" class="px-4 py-2 border border-gray-200 rounded-lg hover:bg-black hover:text-white transition">Ajouter</button>
                 </div>`;
         });
     </script>
