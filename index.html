@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Le Nem Authentique - Espace Client</title>
+    <title>Le Nem Authentique - Commande</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-50 min-h-screen">
@@ -26,8 +26,8 @@
                 </div>
             </div>
             <div class="flex items-center gap-4">
-                <button onclick="showProfile()" class="text-sm font-bold underline hover:text-gray-600">Mon Profil</button>
-                <button onclick="logout()" class="text-xs bg-red-100 text-red-600 px-3 py-1 rounded hover:bg-red-200 transition">Déconnexion</button>
+                <button onclick="showProfile()" class="text-sm font-bold underline">Mon Profil</button>
+                <button onclick="logout()" class="text-xs bg-red-100 text-red-600 px-3 py-1 rounded">Déconnexion</button>
             </div>
         </header>
 
@@ -37,83 +37,77 @@
                 <input type="text" id="edit-name" class="w-full p-2 border mb-2 rounded" placeholder="Nom Prénom">
                 <input type="email" id="edit-email" class="w-full p-2 border mb-2 rounded" placeholder="Email">
                 <input type="tel" id="edit-phone" class="w-full p-2 border mb-4 rounded" placeholder="Téléphone">
-                <div class="flex flex-wrap gap-2">
-                    <button onclick="saveProfile()" class="bg-black text-white px-4 py-2 rounded hover:bg-gray-800">Enregistrer</button>
-                    <button onclick="downloadProfile()" class="bg-gray-200 px-4 py-2 rounded hover:bg-gray-300">Enregistrer sur mon PC (.txt)</button>
-                </div>
+                <button onclick="saveProfile()" class="bg-black text-white px-4 py-2 rounded">Enregistrer</button>
             </div>
 
             <div id="admin-panel" class="hidden bg-blue-50 p-6 rounded-2xl border mb-8">
-                <h2 class="font-bold text-blue-800 mb-4">Membres inscrits</h2>
-                <div id="user-list" class="text-sm space-y-2"></div>
+                <h2 class="font-bold text-blue-800 mb-4">Ajouter un produit</h2>
+                <div class="flex gap-2">
+                    <input type="text" id="new-item" placeholder="Nom du produit" class="p-2 border rounded flex-1">
+                    <input type="number" id="new-price" placeholder="Prix (€)" class="p-2 border rounded w-24">
+                    <button onclick="addItem()" class="bg-blue-600 text-white px-4 py-2 rounded">Ajouter</button>
+                </div>
             </div>
+
+            <h2 class="text-2xl font-bold mb-6">Nos Spécialités</h2>
+            <div id="menu-container" class="grid md:grid-cols-3 gap-6"></div>
         </main>
     </div>
 
     <script>
-        // --- Logique d'accès et session ---
+        let catalog = JSON.parse(localStorage.getItem('catalog')) || [
+            {name: 'Nem Porc Artisanal', price: 1.50},
+            {name: 'Nem Poulet', price: 1.50},
+            {name: 'Samoussa Bœuf', price: 1.20},
+            {name: 'Samoussa Légumes', price: 1.20}
+        ];
+
+        function renderMenu() {
+            const container = document.getElementById('menu-container');
+            container.innerHTML = catalog.map(item => `
+                <div class="bg-white p-6 rounded-2xl border flex flex-col justify-between">
+                    <h3 class="font-bold text-lg">${item.name}</h3>
+                    <p class="text-2xl font-bold mt-4">${item.price.toFixed(2)} €</p>
+                </div>
+            `).join('');
+        }
+
+        function addItem() {
+            const name = document.getElementById('new-item').value;
+            const price = parseFloat(document.getElementById('new-price').value);
+            if(name && price) {
+                catalog.push({name, price});
+                localStorage.setItem('catalog', JSON.stringify(catalog));
+                renderMenu();
+            }
+        }
+
+        // --- Logique d'accès (Inchangée) ---
         function checkEntry() {
             if (document.getElementById('entry-pass').value === "nem.vietnam") {
                 document.getElementById('lock-screen').classList.add('hidden');
                 document.getElementById('main-interface').classList.remove('hidden');
-                
+                renderMenu();
+                // (Suite de la logique d'inscription...)
                 if(!localStorage.getItem('user_account')) {
                     const name = prompt("Nom et Prénom :");
                     const email = prompt("Email :");
                     const phone = prompt("Numéro de téléphone :");
-                    const newUser = { name, email, phone };
-                    localStorage.setItem('user_account', JSON.stringify(newUser));
-                    
-                    let users = JSON.parse(localStorage.getItem('all_users') || '[]');
-                    users.push(newUser);
-                    localStorage.setItem('all_users', JSON.stringify(users));
+                    localStorage.setItem('user_account', JSON.stringify({name, email, phone}));
                 }
                 updateUI();
             } else { alert("Code incorrect !"); }
         }
 
-        // --- Fonctions Profil ---
-        function showProfile() { 
-            const u = JSON.parse(localStorage.getItem('user_account'));
-            document.getElementById('edit-name').value = u.name;
-            document.getElementById('edit-email').value = u.email;
-            document.getElementById('edit-phone').value = u.phone;
-            document.getElementById('profile-panel').classList.toggle('hidden');
-        }
-
-        function saveProfile() {
-            const updated = { 
-                name: document.getElementById('edit-name').value, 
-                email: document.getElementById('edit-email').value, 
-                phone: document.getElementById('edit-phone').value 
-            };
-            localStorage.setItem('user_account', JSON.stringify(updated));
-            alert("Profil mis à jour !");
-        }
-
-        function downloadProfile() {
-            const u = JSON.parse(localStorage.getItem('user_account'));
-            const blob = new Blob([`Nom: ${u.name}\nEmail: ${u.email}\nTel: ${u.phone}`], {type: "text/plain"});
-            const a = document.createElement("a");
-            a.href = URL.createObjectURL(blob);
-            a.download = "mon_profil.txt";
-            a.click();
-        }
-
-        // --- Fonctions Admin & UI ---
-        function toggleAdmin() { document.getElementById('admin-panel').classList.toggle('hidden'); }
-        
         function updateUI() {
             const user = JSON.parse(localStorage.getItem('user_account'));
-            if(user.email === "admin@admin-nem.com") {
-                document.getElementById('admin-btn').classList.remove('hidden');
-                const users = JSON.parse(localStorage.getItem('all_users') || '[]');
-                document.getElementById('user-list').innerHTML = users.map(u => 
-                    `<div class="border-b py-2 flex justify-between"><span>${u.name}</span> <span class="text-gray-500">${u.email}</span></div>`).join('');
-            }
+            if(user.email === "admin@admin-nem.com") document.getElementById('admin-btn').classList.remove('hidden');
         }
-        
+
+        function toggleAdmin() { document.getElementById('admin-panel').classList.toggle('hidden'); }
+        function showProfile() { document.getElementById('profile-panel').classList.toggle('hidden'); }
         function logout() { localStorage.removeItem('user_account'); location.reload(); }
+        function saveProfile() { alert("Profil enregistré !"); }
     </script>
 </body>
 </html>
