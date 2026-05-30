@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>hanetantoine - Commande en ligne</title>
+    <title>Les Saveurs Artisanales du Nem Authentique</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <script async src="https://tally.so/widgets/embed.js"></script>
@@ -13,48 +13,54 @@
 </head>
 <body class="bg-white font-sans text-gray-900">
 
-    <header class="flex items-center justify-between p-6 border-b border-gray-100">
-        <a href="/" class="text-xl font-bold tracking-tight">hanetantoine</a>
-        
+    <header class="flex items-center justify-between p-6 border-b border-gray-100 sticky top-0 bg-white z-50">
+        <a href="/" class="text-xl font-bold tracking-tight">Le Nem Authentique</a>
         <nav class="hidden lg:flex">
-            <ul class="flex space-x-8">
-                <li><a href="#" class="text-gray-500 hover:text-black font-medium transition">Menu</a></li>
-                <li><button data-tally-open="EkML7o" class="text-gray-500 hover:text-black font-medium transition">Contact</button></li>
+            <ul class="flex space-x-8 font-medium text-gray-600">
+                <li><a href="#menu" class="hover:text-black transition">Nos Produits</a></li>
+                <li><a href="#paiement" class="hover:text-black transition">Paiement</a></li>
+                <li><button data-tally-open="EkML7o" class="hover:text-black transition">Contact</button></li>
             </ul>
         </nav>
-
-        <div class="lg:hidden">
-            <button class="text-gray-600 font-medium">Menu</button>
-        </div>
     </header>
+
+    <section class="py-20 text-center bg-black text-white">
+        <h1 class="text-5xl md:text-7xl font-bold mb-4">Les Saveurs Artisanales du Nem Authentique</h1>
+        <p class="text-xl text-gray-400">Par L'Atelier des Saveurs d'Asie</p>
+    </section>
 
     <main class="max-w-5xl mx-auto px-6 py-12">
         <div class="grid md:grid-cols-3 gap-12">
-            <div class="md:col-span-2 space-y-6" id="menu-container"></div>
+            
+            <div class="md:col-span-2 space-y-10" id="menu">
+                <h2 class="text-2xl font-bold">Commander nos spécialités</h2>
+                <div id="menu-container" class="space-y-6"></div>
+            </div>
 
-            <div class="bg-gray-50 p-8 rounded-2xl h-fit sticky top-6">
+            <div class="bg-gray-50 p-8 rounded-2xl h-fit sticky top-24">
                 <h2 class="text-lg font-bold mb-6">Votre commande</h2>
                 <div id="cart-items" class="space-y-4 mb-6 text-sm"></div>
                 <div class="border-t border-gray-200 pt-6 space-y-2 text-sm">
-                    <div class="flex justify-between"><span>HT</span><span id="total-ht">0.00€</span></div>
-                    <div class="flex justify-between"><span>TVA (5.5%)</span><span id="total-tva">0.00€</span></div>
-                    <div class="flex justify-between font-bold text-base pt-2"><span>Total</span><span id="total-ttc">0.00€</span></div>
+                    <div class="flex justify-between font-bold text-base"><span>Total TTC</span><span id="total-ttc">0.00€</span></div>
                 </div>
                 <button onclick="sendReceipt()" class="w-full mt-8 bg-black text-white py-4 rounded-xl font-medium hover:bg-gray-800 transition">
                     Valider la commande
                 </button>
             </div>
         </div>
+
+        <section id="paiement" class="mt-20 py-12 border-t text-center">
+            <h2 class="text-3xl font-bold mb-6">Le mode de paiement</h2>
+            <p class="text-gray-600 max-w-2xl mx-auto">Vous pouvez venir chercher votre commande à l'adresse indiquée sur le mail de confirmation qui vous a été envoyé.</p>
+        </section>
     </main>
 
     <script>
         const catalog = [
-            { cat: 'Menus', name: 'Burger Signature', price: 12.00 },
-            { cat: 'Menus', name: 'Pizza Margherita', price: 10.00 },
-            { cat: 'Desserts', name: 'Tiramisu Maison', price: 5.00 },
-            { cat: 'Desserts', name: 'Mousse Chocolat', price: 4.50 },
-            { cat: 'Boissons', name: 'Coca-Cola', price: 2.50 },
-            { cat: 'Boissons', name: 'Jus d\'orange', price: 3.00 }
+            { cat: 'Nems', name: 'Nem Porc Artisanal', price: 1.50 },
+            { cat: 'Nems', name: 'Nem Poulet', price: 1.50 },
+            { cat: 'Samoussas', name: 'Samoussa Bœuf', price: 1.20 },
+            { cat: 'Samoussas', name: 'Samoussa Légumes', price: 1.20 }
         ];
 
         let cart = [];
@@ -62,22 +68,17 @@
         function updateCart() {
             const container = document.getElementById('cart-items');
             container.innerHTML = '';
-            let ht = 0;
+            let total = 0;
             cart.forEach(item => {
-                ht += item.price;
+                total += item.price;
                 container.innerHTML += `<div class="flex justify-between"><span>${item.name}</span><span class="font-medium">${item.price.toFixed(2)}€</span></div>`;
             });
-            const tva = ht * 0.055;
-            document.getElementById('total-ht').innerText = ht.toFixed(2) + '€';
-            document.getElementById('total-tva').innerText = tva.toFixed(2) + '€';
-            document.getElementById('total-ttc').innerText = (ht + tva).toFixed(2) + '€';
+            document.getElementById('total-ttc').innerText = total.toFixed(2) + '€';
         }
 
         function addToCart(name, price) {
-            if(cart.length < 10) {
-                cart.push({name, price});
-                updateCart();
-            } else { alert("Limite de 10 articles atteinte !"); }
+            cart.push({name, price});
+            updateCart();
         }
 
         function sendReceipt() {
@@ -85,22 +86,19 @@
             const email = prompt("Entrez votre e-mail pour recevoir le reçu :");
             if (!email) return;
 
-            const templateParams = {
+            emailjs.send('service_urmxi8v', 'template_xsgdx5j', {
                 to_email: email,
                 cart_summary: cart.map(i => i.name).join(', '),
                 total_ttc: document.getElementById('total-ttc').innerText
-            };
-
-            emailjs.send('service_urmxi8v', 'template_xsgdx5j', templateParams)
-                .then(() => alert("✅ Reçu envoyé !"), (err) => alert("❌ Erreur."));
+            }).then(() => alert("✅ Commande envoyée ! Vérifiez vos mails."), (err) => alert("❌ Erreur."));
         }
 
         const menuCont = document.getElementById('menu-container');
         catalog.forEach(item => {
             menuCont.innerHTML += `
-                <div class="flex justify-between items-center group">
+                <div class="flex justify-between items-center">
                     <div>
-                        <span class="text-[10px] uppercase tracking-widest text-gray-400">${item.cat}</span>
+                        <span class="text-[10px] uppercase tracking-widest text-orange-600 font-bold">${item.cat}</span>
                         <h3 class="font-medium text-lg">${item.name}</h3>
                     </div>
                     <button onclick="addToCart('${item.name}', ${item.price})" class="px-4 py-2 border border-gray-200 rounded-lg hover:bg-black hover:text-white transition">Ajouter</button>
