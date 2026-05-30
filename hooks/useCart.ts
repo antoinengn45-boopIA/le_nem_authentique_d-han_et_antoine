@@ -6,7 +6,7 @@ export const useCart = () => {
 
   const addToCart = (product: any) => {
     setItems((prev) => [...prev, product]);
-    alert(`${product.name} ajouté au panier !`);
+    alert(`${product.name} a été ajouté au panier !`);
   };
 
   return { items, addToCart };
