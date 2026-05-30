@@ -1,21 +1,13 @@
-/* app/globals.css */
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+// app/layout.tsx
+import './globals.css';
 
-body {
-  background-color: #f9fafb;
-  font-family: sans-serif;
-}
-
-.card {
-  border: 1px solid #e5e7eb;
-  padding: 1.5rem;
-  border-radius: 0.5rem;
-  background: white;
-  transition: transform 0.2s;
-}
-
-.card:hover {
-  transform: translateY(-5px);
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <html lang="fr">
+      <head>
+        <script async src="https://tally.so/widgets/embed.js"></script>
+      </head>
+      <body>{children}</body>
+    </html>
+  );
 }
