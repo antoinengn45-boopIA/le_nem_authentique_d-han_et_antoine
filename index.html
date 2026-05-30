@@ -6,10 +6,7 @@
     <title>Le Nem Authentique - Commande</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
-    <script type="text/javascript">
-        // Initialisation avec votre clé publique
-        (function(){ emailjs.init("x-PY3Cs4sSaLBcVj5"); })();
-    </script>
+    <script type="text/javascript">(function(){ emailjs.init("x-PY3Cs4sSaLBcVj5"); })();</script>
 </head>
 <body class="bg-gray-50 min-h-screen">
 
@@ -23,42 +20,84 @@
     </div>
 
     <div id="main-interface" class="hidden">
-        <header class="p-6 border-b bg-white flex justify-between items-center">
+        <header class="p-6 border-b bg-white flex justify-between items-center sticky top-0 z-40">
             <h1 class="text-xl font-bold">Le Nem Authentique</h1>
-            <div id="user-info" class="text-sm text-gray-600"></div>
+            <div class="flex items-center gap-4">
+                <span id="user-info" class="text-sm text-gray-600"></span>
+                <button onclick="logout()" class="text-xs bg-red-100 text-red-600 px-3 py-1 rounded">Déconnexion</button>
+            </div>
         </header>
 
         <main class="max-w-5xl mx-auto px-6 py-12 grid md:grid-cols-3 gap-12">
+            <div id="admin-panel" class="hidden md:col-span-3 bg-blue-50 p-6 rounded-2xl border-2 border-blue-200 mb-8">
+                <h2 class="font-bold text-blue-800 mb-4">Panel Administrateur</h2>
+                <div class="flex flex-wrap gap-4">
+                    <input type="text" id="new-item-name" placeholder="Nom du produit" class="p-2 border rounded">
+                    <input type="text" id="new-item-cat" placeholder="Catégorie" class="p-2 border rounded">
+                    <input type="number" id="new-item-price" placeholder="Prix" class="p-2 border rounded w-20">
+                    <button onclick="addItem()" class="bg-blue-600 text-white px-4 py-2 rounded">Ajouter au menu</button>
+                </div>
+            </div>
+
             <div class="md:col-span-2 space-y-6" id="menu-container"></div>
             
-            <div class="bg-white p-6 rounded-2xl border h-fit sticky top-6 shadow-sm">
+            <div class="bg-white p-6 rounded-2xl border h-fit sticky top-24 shadow-sm">
                 <h2 class="font-bold mb-4">Votre Commande</h2>
-                <div id="cart-items" class="space-y-2 mb-4 text-sm"></div>
-                <div class="border-t pt-4 font-bold">Total : <span id="total-ttc">0.00€</span></div>
-                <button onclick="sendReceipt()" class="w-full mt-6 bg-green-600 text-white py-3 rounded-xl font-bold">Valider la commande</button>
+                <div id="cart-items" class="space-y-2 mb-4 text-sm min-h-[50px]"></div>
+                <div class="border-t pt-4 font-bold text-lg">Total : <span id="total-ttc">0.00€</span></div>
+                <button onclick="sendReceipt()" class="w-full mt-6 bg-green-600 text-white py-3 rounded-xl font-bold hover:bg-green-700">Valider la commande</button>
             </div>
         </main>
     </div>
 
     <script>
+        // --- Session ---
+        function logout() { localStorage.removeItem('user_account'); location.reload(); }
+        
         function checkEntry() {
             if (document.getElementById('entry-pass').value === "nem.vietnam") {
                 document.getElementById('lock-screen').classList.add('hidden');
                 document.getElementById('main-interface').classList.remove('hidden');
                 if(!localStorage.getItem('user_account')) {
-                    const email = prompt("Créez votre compte - Email :");
-                    const phone = prompt("Numéro de téléphone :");
-                    localStorage.setItem('user_account', JSON.stringify({email, phone}));
+                    const email = prompt("Email :");
+                    localStorage.setItem('user_account', JSON.stringify({email}));
                 }
-                document.getElementById('user-info').innerText = JSON.parse(localStorage.getItem('user_account')).email;
+                const user = JSON.parse(localStorage.getItem('user_account'));
+                document.getElementById('user-info').innerText = user.email;
+                if(user.email === "admin@admin.com") document.getElementById('admin-panel').classList.remove('hidden');
             } else { alert("Code incorrect !"); }
         }
 
-        const catalog = [
+        // --- Catalogue & Panier ---
+        let catalog = JSON.parse(localStorage.getItem('catalog')) || [
             { cat: 'Nems', name: 'Nem Porc', price: 1.50 },
             { cat: 'Samoussas', name: 'Samoussa Bœuf', price: 1.20 }
         ];
         let cart = [];
+
+        function addItem() {
+            catalog.push({ 
+                name: document.getElementById('new-item-name').value,
+                cat: document.getElementById('new-item-cat').value,
+                price: parseFloat(document.getElementById('new-item-price').value) 
+            });
+            localStorage.setItem('catalog', JSON.stringify(catalog));
+            renderMenu();
+        }
+
+        function renderMenu() {
+            const container = document.getElementById('menu-container');
+            container.innerHTML = '';
+            catalog.forEach(item => {
+                container.innerHTML += `
+                    <div class="flex justify-between items-center bg-white p-4 rounded-lg border hover:border-gray-300 transition">
+                        <div><p class="text-[10px] uppercase text-orange-600 font-bold">${item.cat}</p><h3 class="font-bold">${item.name} (${item.price.toFixed(2)}€)</h3></div>
+                        <button onclick="addToCart('${item.name}', ${item.price})" class="bg-gray-900 text-white px-4 py-2 rounded-lg hover:bg-black">+</button>
+                    </div>`;
+            });
+        }
+
+        function addToCart(name, price) { cart.push({name, price}); updateCart(); }
 
         function updateCart() {
             const container = document.getElementById('cart-items');
@@ -66,35 +105,21 @@
             let total = 0;
             cart.forEach(item => {
                 total += item.price;
-                container.innerHTML += `<div class="flex justify-between"><span>${item.name}</span><span>${item.price.toFixed(2)}€</span></div>`;
+                container.innerHTML += `<div class="flex justify-between text-sm"><span>${item.name}</span><span>${item.price.toFixed(2)}€</span></div>`;
             });
             document.getElementById('total-ttc').innerText = total.toFixed(2) + '€';
         }
 
-        function addToCart(name, price) {
-            cart.push({name, price});
-            updateCart();
-        }
-
         function sendReceipt() {
             const user = JSON.parse(localStorage.getItem('user_account'));
-            // Envoi avec votre ID de modèle
             emailjs.send('service_urmxi8v', 'template_xsgdx5j', {
                 to_email: user.email,
                 cart_summary: cart.map(i => i.name).join(', '),
                 total_ttc: document.getElementById('total-ttc').innerText
-            }).then(() => alert("✅ Commande envoyée à " + user.email), 
-                  (err) => alert("❌ Erreur : " + JSON.stringify(err)));
+            }).then(() => alert("✅ Commande envoyée à " + user.email), (err) => alert("Erreur"));
         }
 
-        const menuCont = document.getElementById('menu-container');
-        catalog.forEach(item => {
-            menuCont.innerHTML += `
-                <div class="flex justify-between items-center bg-white p-4 rounded-lg border">
-                    <div><p class="text-xs text-orange-600">${item.cat}</p><h3 class="font-bold">${item.name}</h3></div>
-                    <button onclick="addToCart('${item.name}', ${item.price})" class="bg-gray-900 text-white px-4 py-2 rounded-lg">+</button>
-                </div>`;
-        });
+        renderMenu();
     </script>
 </body>
 </html>
