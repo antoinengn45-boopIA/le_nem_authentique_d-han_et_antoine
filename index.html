@@ -3,57 +3,73 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>hanetantoine - Foodtech</title>
+    <title>hanetantoine - Foodtech & Click and Collect</title>
+    
     <script src="https://cdn.tailwindcss.com"></script>
+    
     <script async src="https://tally.so/widgets/embed.js"></script>
 </head>
-<body class="bg-gray-50 text-gray-900 p-8">
+<body class="bg-gray-50 text-gray-900 min-h-screen">
 
-    <main class="max-w-4xl mx-auto">
-        <header class="flex justify-between items-center mb-10">
-            <h1 class="text-4xl font-extrabold">hanetantoine</h1>
+    <main class="max-w-4xl mx-auto p-8">
+        <header class="flex justify-between items-center mb-12">
+            <h1 class="text-4xl font-extrabold tracking-tight">hanetantoine</h1>
             
             <button 
                 data-tally-open="EkML7o" 
                 data-tally-emoji-text="👋" 
                 data-tally-emoji-animation="wave"
-                class="bg-black text-white px-6 py-2 rounded-lg font-medium hover:bg-gray-800 transition"
+                class="bg-black text-white px-6 py-3 rounded-full font-semibold hover:bg-gray-800 transition duration-300 shadow-lg"
             >
                 Contact & Suggestions
             </button>
         </header>
 
         <section>
-            <h2 class="text-2xl font-bold mb-6">Menu</h2>
+            <h2 class="text-2xl font-bold mb-6">Menu du jour</h2>
             <div id="menu-container" class="grid gap-6">
                 </div>
         </section>
     </main>
 
     <script>
-        // La logique du menu et du panier
+        // Liste des produits (Données)
         const menu = [
             { id: 1, name: 'Burger Signature', price: 12.50 },
-            { id: 2, name: 'Salade César', price: 9.00 }
+            { id: 2, name: 'Salade César', price: 9.00 },
+            { id: 3, name: 'Pizza Margherita', price: 11.00 }
         ];
 
         const container = document.getElementById('menu-container');
 
-        // Génération du menu
-        menu.forEach(item => {
-            const card = document.createElement('div');
-            card.className = "border border-gray-200 p-6 rounded-xl bg-white shadow-sm flex justify-between items-center";
-            card.innerHTML = `
-                <div>
-                    <h3 class="text-xl font-semibold">${item.name}</h3>
-                    <p class="text-gray-600">${item.price.toFixed(2)}€</p>
-                </div>
-                <button onclick="alert('Ajouté : ${item.name}')" class="bg-black text-white px-6 py-2 rounded-lg font-medium hover:bg-gray-800 transition">
-                    Ajouter
-                </button>
-            `;
-            container.appendChild(card);
-        });
+        // Fonction pour générer le menu
+        function renderMenu() {
+            menu.forEach(item => {
+                const card = document.createElement('div');
+                card.className = "border border-gray-200 p-6 rounded-2xl bg-white shadow-sm flex justify-between items-center hover:shadow-md transition-shadow";
+                card.innerHTML = `
+                    <div>
+                        <h3 class="text-xl font-bold">${item.name}</h3>
+                        <p class="text-gray-600">${item.price.toFixed(2)}€</p>
+                    </div>
+                    <button 
+                        onclick="addToCart('${item.name}')" 
+                        class="bg-black text-white px-6 py-2 rounded-lg font-medium hover:bg-gray-700 transition"
+                    >
+                        Ajouter
+                    </button>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // Fonction de logique simplifiée pour le panier
+        function addToCart(itemName) {
+            alert(itemName + " a été ajouté à votre commande !");
+        }
+
+        // Initialisation
+        renderMenu();
     </script>
 </body>
 </html>
