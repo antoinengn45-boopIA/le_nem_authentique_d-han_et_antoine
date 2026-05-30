@@ -3,60 +3,98 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>hanetantoine - Foodtech</title>
+    <title>hanetantoine - Commande en ligne</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script async src="https://tally.so/widgets/embed.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script type="text/javascript">
+        (function(){ emailjs.init("VOTRE_PUBLIC_KEY"); })(); // Remplacez par votre clé publique EmailJS
+    </script>
 </head>
-<body class="bg-slate-50 text-slate-900 font-sans">
+<body class="bg-slate-50 font-sans pb-20">
 
-    <header class="bg-white border-b border-slate-200 sticky top-0 z-50">
-        <div class="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
-            <h1 class="text-2xl font-bold tracking-tighter">hanetantoine</h1>
-            <button 
-                data-tally-open="EkML7o" 
-                data-tally-emoji-text="👋" 
-                data-tally-emoji-animation="wave"
-                class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-full font-medium transition-all shadow-md"
-            >
-                Contact & Suggestions
-            </button>
+    <header class="bg-white border-b sticky top-0 z-50">
+        <div class="max-w-5xl mx-auto px-6 py-4 flex justify-between items-center">
+            <h1 class="text-2xl font-bold">hanetantoine</h1>
+            <button data-tally-open="EkML7o" class="text-sm bg-blue-600 text-white px-4 py-2 rounded-full hover:bg-blue-700">Contact</button>
         </div>
     </header>
 
-    <main class="max-w-6xl mx-auto px-6 py-12">
-        <section class="mb-12">
-            <h2 class="text-3xl font-bold mb-8">Menu du jour</h2>
-            <div id="menu-container" class="grid md:grid-cols-3 gap-6">
+    <main class="max-w-5xl mx-auto px-6 py-8">
+        <div class="grid md:grid-cols-3 gap-8">
+            <div class="md:col-span-2 space-y-4" id="menu-container"></div>
+
+            <div class="bg-white p-6 rounded-2xl border shadow-sm h-fit sticky top-24">
+                <h2 class="text-xl font-bold mb-4">Votre Commande</h2>
+                <div id="cart-items" class="space-y-2 mb-4 text-sm"></div>
+                <div class="border-t pt-4 space-y-1 text-sm font-semibold">
+                    <p>Total HT: <span id="total-ht">0.00</span>€</p>
+                    <p>TVA (5.5%): <span id="total-tva">0.00</span>€</p>
+                    <p class="text-lg">Total TTC: <span id="total-ttc">0.00</span>€</p>
                 </div>
-        </section>
+                <button onclick="sendReceipt()" class="w-full mt-6 bg-green-600 text-white py-3 rounded-xl font-bold hover:bg-green-700">
+                    Valider et recevoir le reçu par mail
+                </button>
+            </div>
+        </div>
     </main>
 
     <script>
-        const menu = [
-            { name: 'Burger Signature', price: 12.50 },
-            { name: 'Salade César', price: 9.00 },
-            { name: 'Pizza Margherita', price: 11.00 }
+        const catalog = [
+            { cat: 'Menus', name: 'Burger Signature', price: 12.00 },
+            { cat: 'Menus', name: 'Pizza Margherita', price: 10.00 },
+            { cat: 'Desserts', name: 'Tiramisu Maison', price: 5.00 },
+            { cat: 'Desserts', name: 'Mousse Chocolat', price: 4.50 },
+            { cat: 'Boissons', name: 'Coca-Cola', price: 2.50 },
+            { cat: 'Boissons', name: 'Jus d\'orange', price: 3.00 }
         ];
 
-        const container = document.getElementById('menu-container');
+        let cart = [];
 
-        menu.forEach(item => {
-            const card = document.createElement('div');
-            // Design des cartes (Card style)
-            card.className = "bg-white p-6 rounded-2xl border border-slate-100 shadow-sm hover:shadow-xl transition-all duration-300";
-            card.innerHTML = `
-                <div class="flex flex-col h-full justify-between">
-                    <div>
-                        <h3 class="text-xl font-bold mb-2">${item.name}</h3>
-                        <p class="text-blue-600 font-bold text-lg">${item.price.toFixed(2)} €</p>
-                    </div>
-                    <button onclick="alert('Ajouté : ${item.name}')" 
-                            class="mt-6 w-full bg-slate-900 text-white py-2.5 rounded-xl font-semibold hover:bg-slate-700 transition">
-                        Ajouter
-                    </button>
-                </div>
-            `;
-            container.appendChild(card);
+        function updateCart() {
+            const container = document.getElementById('cart-items');
+            container.innerHTML = '';
+            let ht = 0;
+            cart.forEach(item => {
+                ht += item.price;
+                container.innerHTML += `<div class="flex justify-between"><span>${item.name}</span><span>${item.price.toFixed(2)}€</span></div>`;
+            });
+            const tva = ht * 0.055;
+            document.getElementById('total-ht').innerText = ht.toFixed(2);
+            document.getElementById('total-tva').innerText = tva.toFixed(2);
+            document.getElementById('total-ttc').innerText = (ht + tva).toFixed(2);
+        }
+
+        function addToCart(name, price) {
+            if(cart.length < 10) {
+                cart.push({name, price});
+                updateCart();
+            } else { alert("Max 10 articles !"); }
+        }
+
+        function sendReceipt() {
+            if(cart.length === 0) return alert("Panier vide");
+            const email = prompt("Entrez votre e-mail pour recevoir le reçu :");
+            if (!email) return;
+
+            const templateParams = {
+                to_email: email,
+                cart_summary: cart.map(i => i.name).join(', '),
+                total_ttc: document.getElementById('total-ttc').innerText
+            };
+
+            emailjs.send('service_urmxi8v', 'template_xsgdx5j', templateParams)
+                .then(() => alert("✅ Reçu envoyé avec succès !"), 
+                      (err) => alert("❌ Erreur : " + JSON.stringify(err)));
+        }
+
+        const menuCont = document.getElementById('menu-container');
+        catalog.forEach(item => {
+            menuCont.innerHTML += `
+                <div class="bg-white p-4 rounded-xl border flex justify-between items-center shadow-sm">
+                    <div><span class="text-[10px] font-bold text-blue-500 uppercase">${item.cat}</span>
+                    <h3 class="font-bold">${item.name}</h3></div>
+                    <button onclick="addToCart('${item.name}', ${item.price})" class="bg-slate-900 text-white px-4 py-2 rounded-lg font-bold">+</button>
+                </div>`;
         });
     </script>
 </body>
