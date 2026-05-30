@@ -20,7 +20,10 @@
         <header class="p-6 border-b bg-white flex justify-between items-center sticky top-0 z-40">
             <div class="flex items-center gap-4">
                 <button id="admin-btn" onclick="toggleAdmin()" class="hidden text-xs bg-blue-600 text-white px-3 py-1 rounded font-bold hover:bg-blue-700 transition">Panel Admin</button>
-                <h1 class="text-xl font-bold">Le Nem Authentique</h1>
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 bg-black rounded-full flex items-center justify-center text-white font-bold text-[10px]">NEM</div>
+                    <h1 class="text-xl font-bold">Le Nem Authentique</h1>
+                </div>
             </div>
             <div class="flex items-center gap-4">
                 <button onclick="showProfile()" class="text-sm font-bold underline hover:text-gray-600">Mon Profil</button>
@@ -48,7 +51,7 @@
     </div>
 
     <script>
-        // --- Logique d'accès ---
+        // --- Logique d'accès et session ---
         function checkEntry() {
             if (document.getElementById('entry-pass').value === "nem.vietnam") {
                 document.getElementById('lock-screen').classList.add('hidden');
@@ -97,7 +100,7 @@
             a.click();
         }
 
-        // --- Fonctions Admin & Session ---
+        // --- Fonctions Admin & UI ---
         function toggleAdmin() { document.getElementById('admin-panel').classList.toggle('hidden'); }
         
         function updateUI() {
@@ -110,73 +113,6 @@
             }
         }
         
-        function logout() { localStorage.removeItem('user_account'); location.reload(); }
-    </script>
-</body>
-</html>                    <button onclick="saveProfile()" class="bg-black text-white px-4 py-2 rounded">Enregistrer</button>
-                    <button onclick="downloadProfile()" class="bg-gray-200 px-4 py-2 rounded">Enregistrer sur mon PC (.txt)</button>
-                </div>
-            </div>
-
-            <div id="admin-panel" class="hidden bg-blue-50 p-6 rounded-2xl border mb-8">
-                <h2 class="font-bold text-blue-800 mb-4">Membres inscrits</h2>
-                <div id="user-list" class="text-sm"></div>
-            </div>
-        </main>
-    </div>
-
-    <script>
-        function checkEntry() {
-            if (document.getElementById('entry-pass').value === "nem.vietnam") {
-                document.getElementById('lock-screen').classList.add('hidden');
-                document.getElementById('main-interface').classList.remove('hidden');
-                
-                if(!localStorage.getItem('user_account')) {
-                    const name = prompt("Nom et Prénom :");
-                    const email = prompt("Email :");
-                    const phone = prompt("Numéro de téléphone :");
-                    const newUser = { name, email, phone };
-                    localStorage.setItem('user_account', JSON.stringify(newUser));
-                    let users = JSON.parse(localStorage.getItem('all_users') || '[]');
-                    users.push(newUser);
-                    localStorage.setItem('all_users', JSON.stringify(users));
-                }
-                updateUI();
-            } else { alert("Code incorrect !"); }
-        }
-
-        function toggleAdmin() { document.getElementById('admin-panel').classList.toggle('hidden'); }
-        function showProfile() { 
-            const u = JSON.parse(localStorage.getItem('user_account'));
-            document.getElementById('edit-name').value = u.name;
-            document.getElementById('edit-email').value = u.email;
-            document.getElementById('edit-phone').value = u.phone;
-            document.getElementById('profile-panel').classList.toggle('hidden');
-        }
-
-        function saveProfile() {
-            const updated = { name: document.getElementById('edit-name').value, email: document.getElementById('edit-email').value, phone: document.getElementById('edit-phone').value };
-            localStorage.setItem('user_account', JSON.stringify(updated));
-            alert("Profil mis à jour !");
-        }
-
-        function downloadProfile() {
-            const u = JSON.parse(localStorage.getItem('user_account'));
-            const blob = new Blob([`Nom: ${u.name}\nEmail: ${u.email}\nTel: ${u.phone}`], {type: "text/plain"});
-            const a = document.createElement("a");
-            a.href = URL.createObjectURL(blob);
-            a.download = "mon_profil.txt";
-            a.click();
-        }
-
-        function updateUI() {
-            const user = JSON.parse(localStorage.getItem('user_account'));
-            if(user.email === "admin@admin-nem.com") {
-                document.getElementById('admin-btn').classList.remove('hidden');
-                const users = JSON.parse(localStorage.getItem('all_users') || '[]');
-                document.getElementById('user-list').innerHTML = users.map(u => `<p class="border-b py-1">${u.name} | ${u.email}</p>`).join('');
-            }
-        }
         function logout() { localStorage.removeItem('user_account'); location.reload(); }
     </script>
 </body>
