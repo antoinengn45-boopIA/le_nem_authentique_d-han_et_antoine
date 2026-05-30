@@ -2,108 +2,53 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Les Saveurs Artisanales du Nem Authentique</title>
+    <title>Le Nem Authentique - Accès</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
-    <script async src="https://tally.so/widgets/embed.js"></script>
-    <script type="text/javascript">
-        (function(){ emailjs.init("x-PY3Cs4sSaLBcVj5"); })();
-    </script>
 </head>
-<body class="bg-white font-sans text-gray-900">
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
 
-    <header class="flex items-center justify-between p-6 border-b border-gray-100 sticky top-0 bg-white z-50">
-        <a href="/" class="text-xl font-bold tracking-tight">Le Nem Authentique</a>
-        <nav class="hidden lg:flex">
-            <ul class="flex space-x-8 font-medium text-gray-600">
-                <li><a href="#menu" class="hover:text-black transition">Nos Produits</a></li>
-                <li><a href="#paiement" class="hover:text-black transition">Paiement</a></li>
-                <li><button data-tally-open="EkML7o" class="hover:text-black transition">Contact</button></li>
-            </ul>
-        </nav>
-    </header>
+    <div id="login-screen" class="bg-white p-8 rounded-2xl shadow-xl w-96 text-center">
+        <h1 class="text-2xl font-bold mb-4">Accès Privé</h1>
+        <p class="text-sm text-gray-500 mb-6">Indice : Produit vendu. Pays d'origine</p>
+        <input type="password" id="entry-pass" class="w-full p-3 border rounded-lg mb-4" placeholder="Code d'accès">
+        <button onclick="checkEntry()" class="w-full bg-black text-white py-3 rounded-lg font-bold">Entrer</button>
+    </div>
 
-    <section class="py-20 text-center bg-black text-white">
-        <h1 class="text-5xl md:text-7xl font-bold mb-4">Les Saveurs Artisanales du Nem Authentique</h1>
-        <p class="text-xl text-gray-400">Par L'Atelier des Saveurs d'Asie</p>
-    </section>
-
-    <main class="max-w-5xl mx-auto px-6 py-12">
-        <div class="grid md:grid-cols-3 gap-12">
-            
-            <div class="md:col-span-2 space-y-10" id="menu">
-                <h2 class="text-2xl font-bold">Commander nos spécialités</h2>
-                <div id="menu-container" class="space-y-6"></div>
-            </div>
-
-            <div class="bg-gray-50 p-8 rounded-2xl h-fit sticky top-24">
-                <h2 class="text-lg font-bold mb-6">Votre commande</h2>
-                <div id="cart-items" class="space-y-4 mb-6 text-sm"></div>
-                <div class="border-t border-gray-200 pt-6 space-y-2 text-sm">
-                    <div class="flex justify-between font-bold text-base"><span>Total TTC</span><span id="total-ttc">0.00€</span></div>
-                </div>
-                <button onclick="sendReceipt()" class="w-full mt-8 bg-black text-white py-4 rounded-xl font-medium hover:bg-gray-800 transition">
-                    Valider la commande
-                </button>
-            </div>
-        </div>
-
-        <section id="paiement" class="mt-20 py-12 border-t text-center">
-            <h2 class="text-3xl font-bold mb-6">Le mode de paiement</h2>
-            <p class="text-gray-600 max-w-2xl mx-auto">Vous pouvez venir chercher votre commande à l'adresse indiquée sur le mail de confirmation qui vous a été envoyé.</p>
-        </section>
-    </main>
+    <div id="signup-screen" class="hidden bg-white p-8 rounded-2xl shadow-xl w-96">
+        <h2 class="text-xl font-bold mb-6">Créer mon compte</h2>
+        <input type="email" id="user-email" class="w-full p-3 border rounded-lg mb-3" placeholder="Adresse e-mail">
+        <input type="tel" id="user-phone" class="w-full p-3 border rounded-lg mb-3" placeholder="Numéro de téléphone">
+        <input type="password" id="user-pass" class="w-full p-3 border rounded-lg mb-6" placeholder="Mot de passe">
+        <button onclick="createAccount()" class="w-full bg-orange-600 text-white py-3 rounded-lg font-bold">S'inscrire</button>
+    </div>
 
     <script>
-        const catalog = [
-            { cat: 'Nems', name: 'Nem Porc Artisanal', price: 1.50 },
-            { cat: 'Nems', name: 'Nem Poulet', price: 1.50 },
-            { cat: 'Samoussas', name: 'Samoussa Bœuf', price: 1.20 },
-            { cat: 'Samoussas', name: 'Samoussa Légumes', price: 1.20 }
-        ];
-
-        let cart = [];
-
-        function updateCart() {
-            const container = document.getElementById('cart-items');
-            container.innerHTML = '';
-            let total = 0;
-            cart.forEach(item => {
-                total += item.price;
-                container.innerHTML += `<div class="flex justify-between"><span>${item.name}</span><span class="font-medium">${item.price.toFixed(2)}€</span></div>`;
-            });
-            document.getElementById('total-ttc').innerText = total.toFixed(2) + '€';
+        // 1. Vérification du mot de passe d'entrée
+        function checkEntry() {
+            const pass = document.getElementById('entry-pass').value;
+            if (pass === "nem.vietnam") {
+                document.getElementById('login-screen').classList.add('hidden');
+                document.getElementById('signup-screen').classList.remove('hidden');
+            } else {
+                alert("Code incorrect !");
+            }
         }
 
-        function addToCart(name, price) {
-            cart.push({name, price});
-            updateCart();
+        // 2. Création de compte (Stockage local simple)
+        function createAccount() {
+            const email = document.getElementById('user-email').value;
+            const phone = document.getElementById('user-phone').value;
+            const pass = document.getElementById('user-pass').value;
+
+            if(email && phone && pass) {
+                const user = { email, phone, pass };
+                localStorage.setItem('user_account', JSON.stringify(user));
+                alert("Compte créé avec succès !");
+                window.location.href = "index_principal.html"; // Redirection vers votre site
+            } else {
+                alert("Veuillez remplir tous les champs.");
+            }
         }
-
-        function sendReceipt() {
-            if(cart.length === 0) return alert("Panier vide");
-            const email = prompt("Entrez votre e-mail pour recevoir le reçu :");
-            if (!email) return;
-
-            emailjs.send('service_urmxi8v', 'template_xsgdx5j', {
-                to_email: email,
-                cart_summary: cart.map(i => i.name).join(', '),
-                total_ttc: document.getElementById('total-ttc').innerText
-            }).then(() => alert("✅ Commande envoyée ! Vérifiez vos mails."), (err) => alert("❌ Erreur."));
-        }
-
-        const menuCont = document.getElementById('menu-container');
-        catalog.forEach(item => {
-            menuCont.innerHTML += `
-                <div class="flex justify-between items-center">
-                    <div>
-                        <span class="text-[10px] uppercase tracking-widest text-orange-600 font-bold">${item.cat}</span>
-                        <h3 class="font-medium text-lg">${item.name}</h3>
-                    </div>
-                    <button onclick="addToCart('${item.name}', ${item.price})" class="px-4 py-2 border border-gray-200 rounded-lg hover:bg-black hover:text-white transition">Ajouter</button>
-                </div>`;
-        });
     </script>
 </body>
 </html>
